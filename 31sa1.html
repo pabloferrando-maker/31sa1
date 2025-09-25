@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Legado del Químico - Refugio 9</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #1a202c;
+            color: #a0aec0;
+        }
+        .terminal-glow {
+            text-shadow: 0 0 5px #38b2ac, 0 0 10px #38b2ac;
+        }
+        .card {
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+        }
+        select, button {
+            background-color: #1a202c;
+            border: 1px solid #4a5568;
+            color: #e2e8f0;
+        }
+        button:hover {
+            background-color: #38b2ac;
+            color: #1a202c;
+        }
+        /* Estilo para el scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-5xl font-bold text-teal-400 terminal-glow">El Legado del Químico</h1>
+            <p class="mt-2 text-lg text-gray-400">Supervivencia en el Refugio 9</p>
+        </header>
+
+        <div class="bg-gray-900 border-2 border-teal-500 rounded-lg p-6 mb-8 text-sm md:text-base">
+            <p class="font-bold text-teal-300">> INICIANDO PROTOCOLO DE ANÁLISIS...</p>
+            <p class="mt-2 text-gray-300">> DIARIO DE LA SUPERVISORA: "Si leéis esto, es que las cosas van mal. He dejado lo que pude para ayudaros. Pero sed cautelosos. La ciencia que salva es también la que puede destruir."</p>
+            <p class="mt-4 font-bold text-yellow-400">> DIRECTIVA:</p>
+            <ul class="list-disc list-inside mt-2 space-y-1 text-gray-300">
+                <li>Hay 6 muestras en total.</li>
+                <li>Clasificación por USO: <span class="text-white">1 Veneno</span>, <span class="text-white">2 Fármacos</span>, <span class="text-white">1 Alimento</span>, <span class="text-white">2 Químicos Industriales</span>.</li>
+                <li>Clasificación FÍSICA: <span class="text-white">3 Disoluciones</span>, <span class="text-white">3 Mezclas Heterogéneas</span> (Coloides o Suspensiones).</li>
+            </ul>
+            <p class="mt-4 font-bold text-red-500">> ADVERTENCIA: Un error de clasificación puede ser... fatal.</p>
+        </div>
+
+        <!-- Contenedor de las Muestras -->
+        <main id="samples-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Las tarjetas de las muestras se insertarán aquí con JS -->
+        </main>
+
+        <footer class="text-center mt-8">
+            <button id="verifyButton" class="text-2xl font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-teal-400/50 transition-all duration-200">
+                Verificar Resultados y Sellar Destino
+            </button>
+        </footer>
+    </div>
+
+    <!-- Modal para los Resultados -->
+    <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden">
+        <div class="bg-gray-800 border-2 rounded-lg max-w-2xl w-full p-6 text-center" id="modalContent">
+            <h2 id="modalTitle" class="text-3xl font-bold mb-4"></h2>
+            <p id="modalMessage" class="text-lg mb-6"></p>
+            <button id="closeModal" class="text-xl font-bold py-2 px-6 rounded-lg">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        const samplesData = [
+            {
+                id: 1,
+                name: "Muestra 1: El Lodo Blanco",
+                aspect: "Un líquido blanquecino y acuoso con un polvo blanco muy fino en el fondo que se enturbia al agitarlo.",
+                tests: "Al reposar, el polvo sedimenta. Se puede filtrar. El líquido es alcalino (pH > 7).",
+                label: "COMPUESTO: Hidróxido de Calcio, Ca(OH)₂. NOTAS: Baja solubilidad. Usar para neutralizar acidez en hidropónicos. ¡CUIDADO: Corrosivo!",
+                correctClassification: "Suspensión",
+                correctCategory: "Industrial"
+            },
+            {
+                id: 2,
+                name: "Muestra 2: El Gel Nutritivo",
+                aspect: "Líquido espeso y opaco, de color parduzco. A simple vista parece totalmente uniforme.",
+                tests: "No hay sedimentación. Un láser muestra el camino del haz de luz a través del líquido (Efecto Tyndall).",
+                label: "TIPO: Coloide (Sol). NOTAS: Las partículas son demasiado pequeñas para sedimentar pero dispersan la luz. Suplemento de emergencia.",
+                correctClassification: "Coloide",
+                correctCategory: "Alimento"
+            },
+            {
+                id: 3,
+                name: "Muestra 3: El Fluido Cristalino",
+                aspect: "Totalmente transparente, incoloro e indistinguible del agua.",
+                tests: "Conduce la electricidad. Al evaporarse, deja un residuo de cristales blancos. Concentración: 0.9% p/v.",
+                label: "TIPO: Disolución verdadera. COMPONENTES: NaCl en H₂O. NOTAS: Es isotónica con la sangre. Para rehidratación y limpieza de heridas.",
+                correctClassification: "Disolución",
+                correctCategory: "Fármaco"
+            },
+            {
+                id: 4,
+                name: "Muestra 4: El Peligro Silencioso",
+                aspect: "Líquido transparente e incoloro, idéntico a la muestra 3.",
+                tests: "El haz de luz no es visible al atravesarlo. Etiqueta de peligro con una calavera y nota 'Olor a almendras amargas'.",
+                label: "COMPUESTO: Cianuro de Potasio (KCN) en disolución. ¡PELIGRO EXTREMO! Bloquea la respiración celular. Mortal.",
+                correctClassification: "Disolución",
+                correctCategory: "Veneno"
+            },
+            {
+                id: 5,
+                name: "Muestra 5: El Polvo de la Esperanza",
+                aspect: "Un frasco con un polvo rosado muy fino. Marca: 'Añadir H₂O hasta aquí'.",
+                tests: "Instrucciones: 'Agitar vigorosamente'. Reconstituido forma un líquido rosa y turbio que sedimenta con el tiempo.",
+                label: "TIPO: Suspensión (reconstituida). NOTAS: El principio activo no es soluble. Crucial agitar para dosis correcta. Antibiótico.",
+                correctClassification: "Suspensión",
+                correctCategory: "Fármaco"
+            },
+            {
+                id: 6,
+                name: "Muestra 6: El Refrigerante Vital",
+                aspect: "Líquido viscoso, de un color verde brillante y transparente.",
+                tests: "Se puede separar en dos líquidos por destilación. Advertencia: ¡Tóxico por ingestión! Causa fallo renal.",
+                label: "TIPO: Disolución. COMPONENTES: Etilenglicol en Agua. NOTAS: Protege los circuitos de refrigeración del generador.",
+                correctClassification: "Disolución",
+                correctCategory: "Industrial"
+            }
+        ];
+
+        const samplesGrid = document.getElementById('samples-grid');
+
+        // Poblar la parrilla con las muestras
+        samplesData.forEach(sample => {
+            const card = document.createElement('article');
+            card.className = 'card rounded-lg p-4 flex flex-col space-y-3';
+            card.innerHTML = `
+                <h3 class="text-xl font-bold text-teal-300">${sample.name}</h3>
+                <div>
+                    <p class="font-semibold text-gray-300">Aspecto:</p>
+                    <p class="text-sm">${sample.aspect}</p>
+                </div>
+                <div>
+                    <p class="font-semibold text-gray-300">Pruebas y Datos:</p>
+                    <p class="text-sm">${sample.tests}</p>
+                </div>
+                <div class="bg-gray-800 p-2 rounded border border-yellow-500/50">
+                    <p class="font-semibold text-yellow-400 text-sm">Etiqueta de Almacenamiento:</p>
+                    <p class="text-xs text-yellow-200">${sample.label}</p>
+                </div>
+                <div class="mt-auto pt-4 space-y-2">
+                    <div>
+                        <label for="class-${sample.id}" class="block text-sm font-medium text-gray-300">Clasificación Física:</label>
+                        <select id="class-${sample.id}" class="mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+                            <option value="">Seleccionar...</option>
+                            <option value="Disolución">Disolución (Homogénea)</option>
+                            <option value="Coloide">Coloide (Heterogénea)</option>
+                            <option value="Suspensión">Suspensión (Heterogénea)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="cat-${sample.id}" class="block text-sm font-medium text-gray-300">Categoría de Uso:</label>
+                        <select id="cat-${sample.id}" class="mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+                            <option value="">Seleccionar...</option>
+                            <option value="Veneno">Veneno</option>
+                            <option value="Fármaco">Fármaco</option>
+                            <option value="Alimento">Alimento</option>
+                            <option value="Industrial">Industrial</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            samplesGrid.appendChild(card);
+        });
+        
+        // Lógica del Modal y Verificación
+        const verifyButton = document.getElementById('verifyButton');
+        const resultModal = document.getElementById('resultModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalContent = document.getElementById('modalContent');
+
+        closeModal.addEventListener('click', () => {
+            resultModal.classList.add('hidden');
+        });
+
+        verifyButton.addEventListener('click', () => {
+            let allCorrect = true;
+            let failureReason = null;
+
+            // --- Comprobación de errores críticos ---
+            // Error 1: Confundir el veneno con algo útil
+            const userVenenoCat = document.getElementById('cat-4').value;
+            if (userVenenoCat === 'Alimento') {
+                failureReason = {
+                    title: "DESASTRE: CONTAMINACIÓN MASIVA",
+                    message: "Habéis clasificado el cianuro como 'Alimento'. Se ha mezclado con las raciones de emergencia. En cuestión de horas, el silencio se apodera del refugio para siempre. Nadie ha sobrevivido.",
+                    color: "red"
+                };
+            } else if (userVenenoCat === 'Fármaco') {
+                 failureReason = {
+                    title: "ERROR FATAL: LA CURA MORTAL",
+                    message: "Al clasificar el veneno como 'Fármaco', el equipo médico lo ha administrado a los enfermos buscando una cura. La muerte ha sido rápida e inevitable. Vuestro error ha aniquilado el hospital.",
+                    color: "red"
+                };
+            }
+
+            // Error 2: Ingerir un químico industrial
+            if (!failureReason) {
+                const userIndustrial1Cat = document.getElementById('cat-1').value;
+                const userIndustrial6Cat = document.getElementById('cat-6').value;
+                if (userIndustrial1Cat === 'Alimento' || userIndustrial1Cat === 'Fármaco') {
+                     failureReason = {
+                        title: "TRAGEDIA QUÍMICA: INGESTIÓN CORROSIVA",
+                        message: "Confundisteis el hidróxido de calcio con un suplemento. Las quemaduras internas han causado muertes agónicas. El pánico se extiende por el refugio.",
+                        color: "red"
+                    };
+                } else if (userIndustrial6Cat === 'Alimento' || userIndustrial6Cat === 'Fármaco') {
+                    failureReason = {
+                        title: "TRAGEDIA QUÍMICA: FALLO RENAL GENERALIZADO",
+                        message: "El dulce sabor del etilenglicol engañó a muchos al clasificarlo como 'Alimento'. Un fallo renal masivo ha colapsado la enfermería. La muerte es lenta y dolorosa.",
+                        color: "red"
+                    };
+                }
+            }
+
+            // Error 3: Malgastar recursos vitales
+            if (!failureReason) {
+                const userFoodCat = document.getElementById('cat-2').value;
+                const userDrug1Cat = document.getElementById('cat-3').value;
+                const userDrug2Cat = document.getElementById('cat-5').value;
+                if (userFoodCat === 'Veneno' || userDrug1Cat === 'Veneno' || userDrug2Cat === 'Veneno') {
+                    failureReason = {
+                        title: "MUERTE LENTA: EL MIEDO IRRACIONAL",
+                        message: "En un exceso de celo, habéis clasificado medicinas o alimentos vitales como veneno. Fueron incinerados. Sin antibióticos ni suplementos, la enfermedad y la desnutrición reclaman el refugio en unas pocas semanas.",
+                        color: "yellow"
+                    };
+                }
+            }
+            
+            // Error 4: Fallo del generador
+            if (!failureReason) {
+                 const userIndustrial6Cat = document.getElementById('cat-6').value;
+                 if (userIndustrial6Cat !== 'Industrial') {
+                     failureReason = {
+                         title: "OSCURIDAD Y FRÍO: FALLO CATASTRÓFICO",
+                         message: "No habéis identificado correctamente el refrigerante del generador. Sin el mantenimiento adecuado, el núcleo se ha sobrecalentado y ha explotado. El refugio se ha quedado sin energía, condenado a la oscuridad y al frío eterno.",
+                         color: "yellow"
+                     };
+                 }
+            }
+            
+            // Comprobación final si no hay errores críticos
+            if (!failureReason) {
+                samplesData.forEach(sample => {
+                    const userClass = document.getElementById(`class-${sample.id}`).value;
+                    const userCat = document.getElementById(`cat-${sample.id}`).value;
+                    if (userClass !== sample.correctClassification || userCat !== sample.correctCategory) {
+                        allCorrect = false;
+                    }
+                });
+
+                if (!allCorrect) {
+                     failureReason = {
+                         title: "CIENCIA DEFICIENTE: UN FUTURO INCIERTO",
+                         message: "Habéis evitado un desastre inmediato, pero vuestros errores de clasificación han causado problemas en cadena: cultivos arruinados, medicinas mal administradas y maquinaria dañada. La supervivencia del refugio pende de un hilo.",
+                         color: "yellow"
+                     };
+                }
+            }
+
+            // Mostrar el resultado
+            if (failureReason) {
+                modalTitle.textContent = failureReason.title;
+                modalMessage.textContent = failureReason.message;
+                modalContent.className = `bg-gray-800 border-2 rounded-lg max-w-2xl w-full p-6 text-center border-${failureReason.color}-500`;
+                modalTitle.className = `text-3xl font-bold mb-4 text-${failureReason.color}-400`;
+            } else {
+                modalTitle.textContent = "ÉXITO: ¡EL REFUGIO SOBREVIVE!";
+                modalMessage.textContent = "Vuestro conocimiento y prudencia han salvado a todos. El veneno está aislado, los enfermos reciben sus medicinas, el generador funciona y las reservas de comida se gestionan correctamente. Gracias a vuestra ciencia, hay esperanza para el futuro.";
+                modalContent.className = 'bg-gray-800 border-2 rounded-lg max-w-2xl w-full p-6 text-center border-teal-500';
+                modalTitle.className = 'text-3xl font-bold mb-4 text-teal-400';
+            }
+            
+            resultModal.classList.remove('hidden');
+        });
+
+    </script>
+</body>
+</html>
